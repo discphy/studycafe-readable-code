@@ -3,11 +3,8 @@ package cleancode.studycafe;
 import cleancode.studycafe.exception.AppException;
 import cleancode.studycafe.io.StudyCafeFileHandler;
 import cleancode.studycafe.io.StudyCafeIOHandler;
-import cleancode.studycafe.model.StudyCafeLockerPass;
-import cleancode.studycafe.model.StudyCafePass;
-import cleancode.studycafe.model.StudyCafePassType;
+import cleancode.studycafe.model.*;
 
-import java.util.List;
 import java.util.Optional;
 
 public class StudyCafePassMachine {
@@ -36,17 +33,14 @@ public class StudyCafePassMachine {
 
     private StudyCafePass selectedPass() {
         StudyCafePassType passType = ioHandler.askPassTypeSelecting();
-        List<StudyCafePass> passCandidates = findPassCandidates(passType);
-
+        StudyCafePasses passCandidates = findPassCandidates(passType);
 
         return ioHandler.askPassSelecting(passCandidates);
     }
 
-    private List<StudyCafePass> findPassCandidates(StudyCafePassType passType) {
-        List<StudyCafePass> allPass = studyCafeFileHandler.readStudyCafePasses();
-        return allPass.stream()
-                .filter(passType::isSamePassType)
-                .toList();
+    private StudyCafePasses findPassCandidates(StudyCafePassType passType) {
+        StudyCafePasses allPass = studyCafeFileHandler.readStudyCafePasses();
+        return allPass.findCandidatesBy(passType);
     }
 
     private Optional<StudyCafeLockerPass> selectedLockerPass(StudyCafePass pass) {
@@ -60,9 +54,7 @@ public class StudyCafePassMachine {
     }
 
     private Optional<StudyCafeLockerPass> findLockerPassCandidate(StudyCafePass pass) {
-        List<StudyCafeLockerPass> lockerPasses = studyCafeFileHandler.readLockerPasses();
-        return lockerPasses.stream()
-                .filter(pass::isCandidate)
-                .findFirst();
+        StudyCafeLockerPasses allLockerPasses = studyCafeFileHandler.readLockerPasses();
+        return allLockerPasses.findCandidateBy(pass);
     }
 }

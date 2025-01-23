@@ -2,8 +2,7 @@ package cleancode.studycafe.io;
 
 import cleancode.studycafe.model.StudyCafeLockerPass;
 import cleancode.studycafe.model.StudyCafePass;
-
-import java.util.List;
+import cleancode.studycafe.model.StudyCafePasses;
 
 public class OutputHandler {
 
@@ -22,11 +21,11 @@ public class OutputHandler {
         System.out.println("1. 시간 이용권(자유석) | 2. 주단위 이용권(자유석) | 3. 1인 고정석");
     }
 
-    public void showPassListForSelection(List<StudyCafePass> passes) {
+    public void showPassListForSelection(StudyCafePasses passes) {
         System.out.println();
         System.out.println("이용권 목록");
         for (int index = 0; index < passes.size(); index++) {
-            StudyCafePass pass = passes.get(index);
+            StudyCafePass pass = passes.findBy(index);
             System.out.println(String.format("%s. ", index + 1) + pass.display());
         }
     }

@@ -3,8 +3,7 @@ package cleancode.studycafe.io;
 import cleancode.studycafe.model.StudyCafeLockerPass;
 import cleancode.studycafe.model.StudyCafePass;
 import cleancode.studycafe.model.StudyCafePassType;
-
-import java.util.List;
+import cleancode.studycafe.model.StudyCafePasses;
 
 public class StudyCafeIOHandler {
 
@@ -36,7 +35,7 @@ public class StudyCafeIOHandler {
         return inputHandler.getPassTypeSelectingUserAction();
     }
 
-    public StudyCafePass askPassSelecting(List<StudyCafePass> passCandidates) {
+    public StudyCafePass askPassSelecting(StudyCafePasses passCandidates) {
         outputHandler.showPassListForSelection(passCandidates);
         return inputHandler.getSelectPass(passCandidates);
     }
