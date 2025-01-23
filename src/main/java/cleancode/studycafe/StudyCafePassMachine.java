@@ -1,9 +1,8 @@
 package cleancode.studycafe;
 
 import cleancode.studycafe.exception.AppException;
-import cleancode.studycafe.io.InputHandler;
-import cleancode.studycafe.io.OutputHandler;
 import cleancode.studycafe.io.StudyCafeFileHandler;
+import cleancode.studycafe.io.StudyCafeIOHandler;
 import cleancode.studycafe.model.StudyCafeLockerPass;
 import cleancode.studycafe.model.StudyCafePass;
 import cleancode.studycafe.model.StudyCafePassType;
@@ -13,35 +12,34 @@ import java.util.Optional;
 
 public class StudyCafePassMachine {
 
-    private final InputHandler inputHandler = new InputHandler();
-    private final OutputHandler outputHandler = new OutputHandler();
+    private final StudyCafeIOHandler ioHandler = new StudyCafeIOHandler();
     private final StudyCafeFileHandler studyCafeFileHandler = new StudyCafeFileHandler();
 
     public void run() {
         try {
-            outputHandler.showWelcomeMessage();
-            outputHandler.showAnnouncement();
+            ioHandler.showWelcomeMessage();
+            ioHandler.showAnnouncement();
 
             StudyCafePass selectedPass = selectedPass();
             Optional<StudyCafeLockerPass> selectedLockerPass = selectedLockerPass(selectedPass);
 
             selectedLockerPass.ifPresentOrElse(
-                    lockerPass -> outputHandler.showPassOrderSummary(selectedPass, lockerPass),
-                    () -> outputHandler.showPassOrderSummary(selectedPass)
+                    lockerPass -> ioHandler.showPassOrderSummary(selectedPass, lockerPass),
+                    () -> ioHandler.showPassOrderSummary(selectedPass)
             );
         } catch (AppException e) {
-            outputHandler.showSimpleMessage(e.getMessage());
+            ioHandler.showSimpleMessage(e.getMessage());
         } catch (Exception e) {
-            outputHandler.showSimpleMessage("알 수 없는 오류가 발생했습니다.");
+            ioHandler.showSimpleMessage("알 수 없는 오류가 발생했습니다.");
         }
     }
 
     private StudyCafePass selectedPass() {
-        StudyCafePassType passType = selectedPassType();
+        StudyCafePassType passType = ioHandler.askPassTypeSelecting();
         List<StudyCafePass> passCandidates = findPassCandidates(passType);
 
-        outputHandler.showPassListForSelection(passCandidates);
-        return inputHandler.getSelectPass(passCandidates);
+
+        return ioHandler.askPassSelecting(passCandidates);
     }
 
     private List<StudyCafePass> findPassCandidates(StudyCafePassType passType) {
@@ -51,11 +49,6 @@ public class StudyCafePassMachine {
                 .toList();
     }
 
-    private StudyCafePassType selectedPassType() {
-        outputHandler.askPassTypeSelection();
-        return inputHandler.getPassTypeSelectingUserAction();
-    }
-
     private Optional<StudyCafeLockerPass> selectedLockerPass(StudyCafePass pass) {
         if (pass.cannotSelectLockerPass()) {
             return Optional.empty();
@@ -63,7 +56,7 @@ public class StudyCafePassMachine {
 
         Optional<StudyCafeLockerPass> lockerPassCandidate = findLockerPassCandidate(pass);
         return lockerPassCandidate
-                .filter(this::isSelectedLockerPass);
+                .filter(ioHandler::askLockerPass);
     }
 
     private Optional<StudyCafeLockerPass> findLockerPassCandidate(StudyCafePass pass) {
@@ -71,10 +64,5 @@ public class StudyCafePassMachine {
         return lockerPasses.stream()
                 .filter(pass::isCandidate)
                 .findFirst();
-    }
-
-    private boolean isSelectedLockerPass(StudyCafeLockerPass lockerPass) {
-        outputHandler.askLockerPass(lockerPass);
-        return inputHandler.getLockerSelection();
     }
 }
