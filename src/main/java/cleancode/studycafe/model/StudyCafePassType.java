@@ -12,4 +12,7 @@ public enum StudyCafePassType {
         this.description = description;
     }
 
+    public boolean isSamePassType(StudyCafePass pass) {
+        return this == pass.getPassType();
+    }
 }
