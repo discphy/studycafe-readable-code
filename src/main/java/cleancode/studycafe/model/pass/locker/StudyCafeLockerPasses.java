@@ -1,4 +1,6 @@
-package cleancode.studycafe.model;
+package cleancode.studycafe.model.pass.locker;
+
+import cleancode.studycafe.model.pass.seat.StudyCafeSeatPass;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,7 @@ public class StudyCafeLockerPasses {
         return new StudyCafeLockerPasses(passes);
     }
 
-    public Optional<StudyCafeLockerPass> findCandidateBy(StudyCafePass pass) {
+    public Optional<StudyCafeLockerPass> findCandidateBy(StudyCafeSeatPass pass) {
         return lockerPasses.stream()
                 .filter(pass::isCandidate)
                 .findFirst();
