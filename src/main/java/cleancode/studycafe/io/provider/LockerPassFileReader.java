@@ -1,14 +1,13 @@
 package cleancode.studycafe.io.provider;
 
-import cleancode.studycafe.model.pass.StudyCafePassType;
 import cleancode.studycafe.model.pass.locker.StudyCafeLockerPass;
 import cleancode.studycafe.model.pass.locker.StudyCafeLockerPasses;
+import cleancode.studycafe.model.pass.provider.ReadedLockerPass;
 import cleancode.studycafe.provider.LockerPassProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LockerPassFileReader implements LockerPassProvider {
@@ -17,20 +16,19 @@ public class LockerPassFileReader implements LockerPassProvider {
 
     @Override
     public StudyCafeLockerPasses getLockerPasses() {
+        List<String> lines = readLockerPassLines();
+
+        List<StudyCafeLockerPass> lockerPasses = lines.stream()
+                .map(ReadedLockerPass::ofLine)
+                .map(ReadedLockerPass::toLockerPass)
+                .toList();
+
+        return StudyCafeLockerPasses.of(lockerPasses);
+    }
+
+    private static List<String> readLockerPassLines() {
         try {
-            List<String> lines = Files.readAllLines(Paths.get(LOCKER_PASS_FILE_PATH));
-            List<StudyCafeLockerPass> lockerPasses = new ArrayList<>();
-            for (String line : lines) {
-                String[] values = line.split(",");
-                StudyCafePassType studyCafePassType = StudyCafePassType.valueOf(values[0]);
-                int duration = Integer.parseInt(values[1]);
-                int price = Integer.parseInt(values[2]);
-
-                StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(studyCafePassType, duration, price);
-                lockerPasses.add(lockerPass);
-            }
-
-            return StudyCafeLockerPasses.of(lockerPasses);
+            return Files.readAllLines(Paths.get(LOCKER_PASS_FILE_PATH));
         } catch (IOException e) {
             throw new RuntimeException("파일을 읽는데 실패했습니다.", e);
         }
